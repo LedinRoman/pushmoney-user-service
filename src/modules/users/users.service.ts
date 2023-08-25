@@ -156,6 +156,7 @@ export class UserService {
     }
     if (full_name) {
       updateData.full_name_low = full_name.toLowerCase();
+      updateData.full_name = full_name;
     }
     if (email) {
       updateData.contacts = { email: body.email, ...updateData.contacts };
