@@ -1,0 +1,32 @@
+version: "3.6"
+
+networks:
+  pushmoney-back:
+
+services:
+  mongodb:
+    container_name: pushmoney-back-mongo
+    image: mongo:5.0.9
+    restart: always
+    networks:
+      - pushmoney-back
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGODB_DB}
+    volumes:
+      - ./databases/data/mongodb:/data/db
+    ports:
+      - ${MONGODB_PORT}:27017
+
+  rabbitmq:
+    container_name: pushmoney-back-rabbit
+    image: rabbitmq:3.10.7-management
+    networks:
+      - pushmoney-back
+    ports:
+      - 15672:15672
+      - 5672:5672
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
