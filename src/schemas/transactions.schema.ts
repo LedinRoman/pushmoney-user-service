@@ -6,7 +6,7 @@ export const TransactionSchema = new Schema<ITransactionDocument>(
   {
     _id: {
       type: Types.ObjectId,
-      auto: false,
+      auto: true,
     },
     amount: { type: Number },
     currency_name: { type: String },
