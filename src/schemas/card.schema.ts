@@ -6,7 +6,7 @@ export const CardSchema = new Schema<ICardDocument>(
   {
     _id: {
       type: Types.ObjectId,
-      auto: false,
+      auto: true,
     },
     user_id: { type: String, ref: 'users' },
     status: { type: String, enum: CardStatuses, default: CardStatuses.pending },
