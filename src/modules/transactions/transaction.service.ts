@@ -144,7 +144,7 @@ export class TransactionsService {
         ...transaction,
         receiver_bank: receiverBank,
       };
-      await this.rabbitClient.sendToQueue('createdTransaction', message);
+      await this.rabbitClient.sendToQueue('newTransactions', message);
     }
 
     return transaction;
