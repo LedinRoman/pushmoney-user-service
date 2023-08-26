@@ -19,7 +19,8 @@ export class CreateTransactionDto implements ICreateTransactionRequest {
 
   @ApiPropertyOptional({ example: 1111222233335555 })
   @IsOptional()
-  @IsString()
+  @IsNumber()
+  @Length(16)
     sender_card_number?: number;
 
   @ApiPropertyOptional({ example: 'TINKOFF' })
