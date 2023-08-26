@@ -101,14 +101,15 @@ export class TransactionsService {
         throw new BadRequestException('Currency could not be changed now');
       }
       const amountUsd = body.amount * pairCurrUsd.price;
-
+    
       const decrementFromWallet = amountUsd * rublesInDollar;
       if (userWallet.balance! < decrementFromWallet) {
         throw new BadRequestException('Not enough cash');
       }
 
+      const addAmount = (rublesInDollar * pairCurrUsd.price) / body.amount;
       await this.walletModel.updateOne({ _id: userWallet._id }, { $inc: { balance: -decrementFromWallet } });
-      await this.cardModel.updateOne({ _id: userCard._id }, { $inc: { balance: body.amount } });
+      await this.cardModel.updateOne({ _id: userCard._id }, { $inc: { balance: addAmount } });
       walletCard = true;
     }
 
