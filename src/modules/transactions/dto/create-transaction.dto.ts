@@ -20,7 +20,7 @@ export class CreateTransactionDto implements ICreateTransactionRequest {
   @ApiPropertyOptional({ example: 1111222233335555 })
   @IsOptional()
   @IsNumber()
-  @Length(16)
+  @Length(16, 16)
     sender_card_number?: number;
 
   @ApiPropertyOptional({ example: 'TINKOFF' })
@@ -31,7 +31,7 @@ export class CreateTransactionDto implements ICreateTransactionRequest {
   @ApiPropertyOptional({ example: 1111222233334444 })
   @IsOptional()
   @IsNumber()
-  @Length(16)
+  @Length(16, 16)
     receiver_card_number?: number;
 
   @ApiProperty({ example: 'any string' })
