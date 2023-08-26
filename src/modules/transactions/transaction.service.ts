@@ -45,6 +45,7 @@ export class TransactionsService {
     this.rabbitClient = rabbitClient;
   }
 
+  // TODO: separate funcs
   public async createTransaction(
     body: ICreateTransactionRequest,
     _id: string,
@@ -75,6 +76,7 @@ export class TransactionsService {
     }
 
     // deposit to card from wallet
+    let walletCard = false;
     if (!body.sender_card_number && body.receiver_card_number) {
       // check wallet amount, existence of card, make it in swap with curr
       const userWallet = await this.walletModel.findOne({ user_id: _id });
@@ -93,6 +95,7 @@ export class TransactionsService {
       }
       const rublesInDollar = 1 / pairRubUsd.price;
 
+      // TODO check ruble
       const pairCurrUsd = await this.rateModel.findOne({ first_cur: userCard.currency, second_cur: 'USD' });
       if (!pairCurrUsd) {
         throw new BadRequestException('Currency could not be changed now');
@@ -106,21 +109,24 @@ export class TransactionsService {
 
       await this.walletModel.updateOne({ _id: userWallet._id }, { $inc: { balance: -decrementFromWallet } });
       await this.cardModel.updateOne({ _id: userCard._id }, { $inc: { balance: body.amount } });
+      walletCard = true;
     }
 
-    if (body.receiver_card_number) {
-      const responseReceiver = await this.cardModel.findOne({
-        card_number: body.receiver_card_number,
-      });
+    if (!walletCard) {
+      if (body.receiver_card_number) {
+        const responseReceiver = await this.cardModel.findOne({
+          card_number: body.receiver_card_number,
+        });
 
 
-      if (responseReceiver) {
-        if (body.currency_name && responseReceiver?.currency !== body.currency_name) {
-          throw new BadRequestException('Cant make that payment, choose card with another currency');
+        if (responseReceiver) {
+          if (body.currency_name && responseReceiver?.currency !== body.currency_name) {
+            throw new BadRequestException('Cant make that payment, choose card with another currency');
+          }
+          receiver = responseReceiver._id.toString();
+          receiverBank = responseReceiver.bank as string;
+          await this.cardModel.updateOne({ card_number: responseReceiver.card_number }, { $inc: { balance: body.amount } });
         }
-        receiver = responseReceiver._id.toString();
-        receiverBank = responseReceiver.bank as string;
-        await this.cardModel.updateOne({ card_number: responseReceiver.card_number }, { $inc: { balance: body.amount } });
       }
     }
 
